@@ -1,232 +1,254 @@
-##### **Student Management System (Java + PostgreSQL)**
-
-A console-based Student Management System built using Java, JDBC, and PostgreSQL, designed with DAO and Service-layer architecture.
-
-The system supports role-based access (Admin \& Student) and includes academic risk analysis, making it more than a simple CRUD application.
-
-
-
-###### **Features:**
-
-**User Roles:**
-
-* Admin
-* Student
-
-
-
-###### **Admin Capabilities:**
-
-* Add/Update/Delete students
-* Record student attendance
-* Record student marks
-* View list of At-Risk Students
-* Generate Performance Summary
-* Logout securely
-
-
-
-###### **Student Capabilities:**
-
-* Login securely
-* View attendance percentage
-* View mark (all subjects + average)
-* View academic status (SAFE/AT RISK)
-
-
-
-###### **Academic Risk Logic:**
-
-A student is considered AT RISK if:
-
-Attendance<75% OR Average Marks <50
-
-This logic is implemented in a dedicated service layer, not directly in DAO classes.
-
-
-
-###### **Architecture Overview:**
-
-This project follows layered (MVC-inspired) architecture with clear separation of concerns:
-
-Menu layer -> User interaction (console UI)
-
-Service layer -> Business logic
-
-DAO layer -> Database operations
-
-Model layer -> Data representation
-
-DB layer -> Database connectivity
-
-Main class -> Application entry point
-
-
-
-**Architecture Flow (How everything connects)**
-
-User
-
-&nbsp;↓
-
-Menu (AdminMenu / StudentMenu)
-
-&nbsp;↓
-
-Service (RiskAnalyzer)
-
-&nbsp;↓
-
-DAO (StudentDAO, MarksDAO, AttendanceDAO, AuthDAO)
-
-&nbsp;↓
-
-DBConnection
-
-&nbsp;↓
-
-Database
-
-
-
-###### **Database Design (PostgreSQL):**
-
-
-
-**Tables:**
-
-
-
-**student**
-
-Column          | Type
-
-----------------|-------------------------
-
-student\_id      | INT (PK)
-
-name            | VARCHAR
-
-email           | VARCHAR
-
-password        | VARCHAR
-
-role            | VARCHAR (ADMIN / STUDENT)
-
-
-
-
-
-**attendance**
-
-Column            | Type
-
-------------------|----------------
-
-attendance\_id     | INT (PK)
-
-student\_id        | INT (FK)
-
-classes\_attended  | INT
-
-total\_classes     | INT
-
-
-
-
-
-**marks**
-
-Column            | Type
-
-------------------|----------------
-
-attendance\_id     | INT (PK)
-
-student\_id        | INT (FK)
-
-classes\_attended  | INT
-
-total\_classes     | INT
-
-
-
-
-
-###### **Tools Used:**
-
-* Java (JDK 8+)
-* PostgreSQL
-* JDBC
-* SQL
-* Console UI
-* DAO Design Pattern
-
-
-
-###### **How to Run Locally:**
-
-* Clone the repository: https://github.com/sadiaa-ops/student-management-system.git
-* Create PostgreSQL database and tables
-* Update database credentials in DBConnection.java
-* Run Main.java
-
-
-
-###### **Sample Output:**
-
+# Student Management System (Java + PostgreSQL)
+
+A robust console-based Student Management System built with Java, JDBC, and PostgreSQL. This project demonstrates professional software architecture using DAO and Service-layer patterns, implementing role-based access control and intelligent academic risk analysis.
+
+---
+
+## Project Overview
+
+Unlike simple CRUD applications, this system incorporates **business logic** for academic performance monitoring, making it suitable for real-world educational institutions. The system automatically identifies at-risk students based on attendance and academic performance metrics.
+
+---
+
+## Key Features
+
+### Role-Based Access Control
+- **Admin Role**: Full system access with management capabilities
+- **Student Role**: Personal academic data viewing with read-only access
+
+### Admin Capabilities
+- **Student Management**: Add, update, and delete student records
+- **Attendance Tracking**: Record and monitor class attendance
+- **Grade Management**: Record marks across multiple subjects
+- **Risk Monitoring**: View comprehensive list of at-risk students
+- **Analytics**: Generate detailed performance summaries
+- **Secure Logout**: Session management with secure exit
+
+### Student Capabilities
+- **Secure Authentication**: Password-protected login system
+- **Attendance Overview**: View personal attendance percentage
+- **Grade Report**: Access marks for all subjects with calculated averages
+- **Academic Status**: Real-time risk assessment (SAFE/AT RISK)
+
+### Academic Risk Analysis
+A student is flagged as **AT RISK** if:
+- **Attendance < 75%** OR
+- **Average Marks < 50**
+
+> **Architecture Note**: Risk logic is encapsulated in the **Service Layer** (`RiskAnalyzer`), maintaining separation from data access operations.
+
+---
+
+## Architecture Overview
+
+This project follows **layered architecture** (MVC-inspired) with clear separation of concerns:
+
+```
+┌─────────────────────────────────────────┐
+│         Presentation Layer              │
+│  (AdminMenu / StudentMenu)              │
+│  - User interaction & console UI        │
+└──────────────┬──────────────────────────┘
+               │
+┌──────────────▼──────────────────────────┐
+│         Service Layer                   │
+│  (RiskAnalyzer, Business Logic)         │
+│  - Academic risk calculation            │
+│  - Performance analysis                 │
+└──────────────┬──────────────────────────┘
+               │
+┌──────────────▼──────────────────────────┐
+│         Data Access Layer (DAO)         │
+│  - StudentDAO                           │
+│  - MarksDAO                             │
+│  - AttendanceDAO                        │
+│  - AuthDAO                              │
+└──────────────┬──────────────────────────┘
+               │
+┌──────────────▼──────────────────────────┐
+│         Database Layer                  │
+│  (DBConnection)                         │
+│  - Connection pooling                   │
+│  - JDBC management                      │
+└──────────────┬──────────────────────────┘
+               │
+┌──────────────▼──────────────────────────┐
+│         PostgreSQL Database             │
+└─────────────────────────────────────────┘
+```
+
+### Architecture Flow
+```
+User Input → Menu Layer → Service Layer → DAO Layer → Database → Response
+```
+
+---
+
+## Database Schema
+
+### **`student`** Table
+| Column      | Type                         | Constraints |
+|-------------|------------------------------|-------------|
+| student_id  | INT                          | PRIMARY KEY |
+| name        | VARCHAR(100)                 | NOT NULL    |
+| email       | VARCHAR(100)                 | UNIQUE      |
+| password    | VARCHAR(255)                 | NOT NULL    |
+| role        | VARCHAR(20)                  | CHECK (role IN ('ADMIN', 'STUDENT')) |
+
+### **`attendance`** Table
+| Column           | Type | Constraints |
+|------------------|------|-------------|
+| attendance_id    | INT  | PRIMARY KEY |
+| student_id       | INT  | FOREIGN KEY → student(student_id) |
+| classes_attended | INT  | NOT NULL    |
+| total_classes    | INT  | NOT NULL    |
+
+### **`marks`** Table
+| Column     | Type         | Constraints |
+|------------|--------------|-------------|
+| marks_id   | INT          | PRIMARY KEY |
+| student_id | INT          | FOREIGN KEY → student(student_id) |
+| subject    | VARCHAR(50)  | NOT NULL    |
+| marks      | INT          | CHECK (marks BETWEEN 0 AND 100) |
+
+---
+
+## Technologies & Tools
+
+| Category | Technology |
+|----------|-----------|
+| **Language** | Java (JDK 8+) |
+| **Database** | PostgreSQL 12+ |
+| **Connectivity** | JDBC Driver |
+| **Architecture** | DAO Pattern, Service Layer |
+| **UI** | Console-based (Scanner) |
+| **Design Patterns** | Singleton (DBConnection), DAO, MVC |
+
+---
+## Project Structure
+
+```
+student-management-system/
+├── src/
+│   ├── Main.java
+│   ├── model/
+│   │   ├── Student.java
+│   │   ├── Attendance.java
+│   │   └── Marks.java
+│   ├── dao/
+│   │   ├── StudentDAO.java
+│   │   ├── AttendanceDAO.java
+│   │   ├── MarksDAO.java
+│   │   └── AuthDAO.java
+│   ├── service/
+│   │   └── RiskAnalyzer.java
+│   ├── menu/
+│   │   ├── AdminMenu.java
+│   │   └── StudentMenu.java
+│   └── db/
+│       └── DBConnection.java
+├── lib/
+│   └── postgresql-jdbc.jar
+├── schema.sql
+└── README.md
+```
+
+---
+
+## Getting Started
+
+### Prerequisites
+- Java Development Kit (JDK 8 or higher)
+- PostgreSQL (version 12+)
+- PostgreSQL JDBC Driver
+- Git
+
+### Installation Steps
+
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/sadiaa-ops/student-management-system.git
+   cd student-management-system
+   ```
+
+2. **Set Up Database**
+   ```sql
+   -- Create database
+   CREATE DATABASE student_management_db;
+   
+   -- Connect to database
+   \c student_management_db
+   
+   -- Run the schema.sql file (create tables)
+   \i schema.sql
+   ```
+
+3. **Configure Database Connection**
+   
+   Update `src/db/DBConnection.java` with your credentials:
+   ```java
+   private static final String URL = "jdbc:postgresql://localhost:5432/student_management_db";
+   private static final String USER = "your_username";
+   private static final String PASSWORD = "your_password";
+   ```
+
+4. **Compile and Run**
+   ```bash
+   # Compile
+   javac -cp ".:postgresql-jdbc.jar" src/Main.java
+   
+   # Run
+   java -cp ".:postgresql-jdbc.jar" Main
+   ```
+
+---
+
+## Sample Output
+
+```
 ===== Student Management System =====
-
-1\. Login
-
-2\. Exit
-
+1. Login
+2. Exit
 Enter choice: 1
-
 ID: 201
-
 Password: pass123
-
 Database connected successfully!
-
 Login Successful! Role: ADMIN
 
-
-
 ===== ADMIN MENU =====
+1. Add Student
+2. Update Student
+3. Delete Student
+4. Record Attendance
+5. Record Marks
+6. View At-Risk Students
+7. Performance Summary
+8. Logout
+Enter choice: 7
 
-1\. Add Student
+--- PERFORMANCE SUMMARY ---
+Emily Johnson | Attendance: 75.00% | Avg Marks: 68.50 | SAFE
+Michael Scott | Attendance: 55.00% | Avg Marks: 42.50 | AT RISK
+Sophia Brown | Attendance: 95.00% | Avg Marks: 89.50 | SAFE
+Mavis Grey | Attendance: 65.00% | Avg Marks: 50.00 | AT RISK
+Adam West | Attendance: 87.50% | Avg Marks: 79.00 | SAFE
+Sarah Cook | Attendance: 0.00% | Avg Marks: 0.00 | AT RISK
+```
 
-2\. Update Student
+---
 
-3\. Delete Student
+## Future Enhancements
 
-4\. Record Attendance
+- **GUI Development**: Migrate to Swing or JavaFX for modern desktop UI
+- **Security**: Implement BCrypt password hashing
+- **Reporting**: Export performance reports to PDF/CSV formats
+- **Analytics Dashboard**: Visual charts using JFreeChart
+- **Email Notifications**: Alert at-risk students automatically
+- **REST API**: Convert to Spring Boot microservice
+- **Multi-semester Support**: Historical data tracking
+- **Backup & Restore**: Automated database backup functionality
 
-5\. Record Marks
-
-6\. View At-Risk Students
-
-7\. Performance Summary
-
-8\. Logout
-
-Enter choice: 8
-
-Logging out...
-
-
-
-###### **Future Enhancements:**
-
-* Swing/JavaFX UI
-* Password hashing
-* Export reports (PDF/CSV)
-* Web version using Spring Boot
-
-
-
-
+---
 
 
 
